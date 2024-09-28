@@ -154,4 +154,4 @@ def upload_audio():
     return redirect(url_for('chat', room_id=room_id))
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0', port=10000)
+    app.run(debug=True, host='0.0.0.0', port=10000)
