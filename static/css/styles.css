@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+h1, h2 {
+    color: #343a40;
+}
+
+textarea {
+    height: 100px;
+}
+
+.list-group-item {
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: transform 0.2s;
+}
+
+.list-group-item:hover {
+    transform: scale(1.02);
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
