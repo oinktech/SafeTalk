@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天房間 - {{ room_id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>聊天房間 - {{ room_id }}</h1>
+        <a href="{{ url_for('logout') }}" class="logout">登出</a>
+    </div>
+    <div class="chat-container">
+        <div class="chat-box">
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">
+                        <strong>{{ message[2] }}:</strong> {{ message[3] }}
+                    </div>
+                {% endfor %}
+            </div>
+            <input type="text" id="text-input" placeholder="輸入文字..." />
+            <button id="send-btn">發送</button>
+            <input type="file" id="audio-input" accept="audio/*" />
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 截屏检测逻辑
+            $(document).on('keydown', function(e) {
+                if (e.key === 'PrintScreen') {
+                    alert('不允許截屏！');
+                    $.post('/delete_all_messages', { room_id: '{{ room_id }}' }); // 删除记录
+                }
+            });
+
+            $('#send-btn').click(function() {
+                const content = $('#text-input').val();
+                const roomId = '{{ room_id }}';
+                
+                $.post('/send_message', { room_id: roomId, content: content }, function() {
+                    $('#text-input').val('');
+                    location.reload(); // 刷新页面
+                });
+            });
+
+            $('#audio-input').change(function() {
+                const file = this.files[0];
+                const formData = new FormData();
+                formData.append('audio', file);
+                formData.append('room_id', '{{ room_id }}');
+
+                $.ajax({
+                    url: '/upload_audio',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function() {
+                        location.reload(); // 刷新页面
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
