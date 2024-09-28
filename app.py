@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import sqlite3
@@ -96,37 +96,23 @@ def logout():
 @app.route('/chat/<room_id>', methods=['GET', 'POST'])
 @login_required
 def chat(room_id):
-    if request.method == 'POST':
-        # 清除聊天记录以防止截图
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM messages WHERE room_id = ?", (room_id,))
-        conn.commit()
-        conn.close()
-
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
+
+    # 获取当前房间的消息
     cursor.execute("SELECT * FROM messages WHERE room_id = ?", (room_id,))
     messages = cursor.fetchall()
-    conn.close()
+    
+    if request.method == 'POST':
+        # 处理发送消息
+        content = request.form['content']
+        msg_type = 'text'  # 假设消息类型为文本
+        cursor.execute("INSERT INTO messages (room_id, user_id, content, type) VALUES (?, ?, ?, ?)",
+                       (room_id, current_user.id, content, msg_type))
+        conn.commit()
 
+    conn.close()
     return render_template('chat.html', room_id=room_id, messages=messages)
-
-@app.route('/send_message', methods=['POST'])
-@login_required
-def send_message():
-    room_id = request.form['room_id']
-    content = request.form['content']
-    msg_type = 'text'  # 假设消息类型为文本
-
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO messages (room_id, user_id, content, type) VALUES (?, ?, ?, ?)",
-                   (room_id, current_user.id, content, msg_type))
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for('chat', room_id=room_id))
 
 @app.route('/upload_audio', methods=['POST'])
 @login_required
