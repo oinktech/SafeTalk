@@ -3,52 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <title>論壇</title>
+    <title>登入</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>論壇</h1>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <ul class="flashes">
-            {% for category, message in messages %}
-              <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
-        
-        <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            {{ form.text.label }}<br>
-            {{ form.text(size=80) }}<br>
-            {{ form.photo.label }}<br>
-            {{ form.photo() }}<br>
-            {{ form.audio.label }}<br>
-            {{ form.audio() }}<br>
-            <input type="hidden" name="suffix" value="{{ suffix }}">
-            {{ form.submit() }}
+    <div class="login-container">
+        <h1>登入</h1>
+        <form method="POST">
+            <input type="text" name="username" placeholder="用戶名" required>
+            <input type="password" name="password" placeholder="密碼" required>
+            <button type="submit">登入</button>
         </form>
-
-        <div class="posts">
-            {% for post in posts %}
-            <div class="post">
-                <p>{{ post[1] }}</p>
-                {% if post[2] %}
-                <img src="{{ url_for('static', filename='uploads/images/' + post[2]) }}" alt="Image" class="post-image">
-                {% endif %}
-                {% if post[3] %}
-                <audio controls>
-                    <source src="{{ url_for('static', filename='uploads/audios/' + post[3]) }}" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                {% endif %}
-                <small>發佈時間：{{ post[4] }}</small>
-            </div>
-            {% endfor %}
-        </div>
+        <a href="{{ url_for('register') }}">註冊</a>
     </div>
 </body>
 </html>
