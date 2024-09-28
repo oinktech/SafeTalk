@@ -87,6 +87,25 @@ def register():
             conn.close()
     return render_template('register.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user:
+            login_user(User(user[0], user[1]))
+            return redirect(url_for('chat', room_id='default'))
+        else:
+            flash('登入失敗！請檢查用戶名和密碼。', 'error')
+
+    return render_template('login.html')
+
 @app.route('/logout')
 @login_required
 def logout():
